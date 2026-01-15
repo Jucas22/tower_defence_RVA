@@ -15,6 +15,8 @@ public class GroundPlacementController : MonoBehaviour
     [Header("Configuración de PlaneFinderBehaviour")]
     [Tooltip("Referencia al PlaneFinderBehaviour (si no se asigna, se buscará automáticamente en la escena)")]
     public PlaneFinderBehaviour planeFinder;
+    [Tooltip("Máscara de capas para el raycast de Physics (usado como fallback). Dejar en 'Default' para detectar todo.")]
+    public LayerMask raycastLayerMask = -1; // -1 significa "todas las capas"
 
     [Header("Configuración de Movimiento")]
     [Tooltip("Velocidad de movimiento del avatar (metros/segundo)")]
@@ -175,7 +177,7 @@ public class GroundPlacementController : MonoBehaviour
         else
         {
             // Fallback: usar Physics.Raycast si el HitTest de Vuforia no funciona
-            if (Physics.Raycast(ray, out var hitInfo))
+            if (Physics.Raycast(ray, out var hitInfo, Mathf.Infinity, raycastLayerMask))
             {
                 // Instanciar y configurar avatar usando Physics
                 InstantiateAndSetupAvatar(hitInfo.point, hitInfo.normal);
@@ -274,6 +276,7 @@ public class GroundPlacementController : MonoBehaviour
     {
         // Instanciar avatar
         spawnedAvatar = Instantiate(avatarPrefab, position, Quaternion.identity);
+        // Asegurar que esté activo (necesario si el prefab está desactivado)
         spawnedAvatar.SetActive(true);
         
         avatarPlaced = true;
