@@ -36,9 +36,17 @@ public class GroundPlacementController : MonoBehaviour
     private bool avatarPlaced = false;
     private Plane groundPlane;
     private bool planeDetected = false;
+    private Camera arCamera;
 
     void Start()
     {
+        // Obtener referencia a la cámara principal
+        arCamera = Camera.main;
+        if (arCamera == null)
+        {
+            Debug.LogError("[GroundPlacementController] No se encontró cámara principal. Asegúrate de tener una cámara con tag 'MainCamera'.");
+        }
+
         // Buscar PlaneFinderBehaviour si no está asignado
         if (planeFinder == null)
         {
@@ -122,7 +130,10 @@ public class GroundPlacementController : MonoBehaviour
     /// </summary>
     void HandleTouch(Vector2 touchPosition)
     {
-        Ray ray = Camera.main.ScreenPointToRay(touchPosition);
+        if (arCamera == null)
+            return;
+
+        Ray ray = arCamera.ScreenPointToRay(touchPosition);
 
         if (!avatarPlaced)
         {
@@ -165,11 +176,7 @@ public class GroundPlacementController : MonoBehaviour
             targetPosition = hit.Position;
 
             // Obtener el Animator si existe
-            avatarAnimator = spawnedAvatar.GetComponent<Animator>();
-            if (avatarAnimator == null)
-            {
-                avatarAnimator = spawnedAvatar.GetComponentInChildren<Animator>();
-            }
+            GetAvatarAnimator(spawnedAvatar);
 
             // Establecer estado inicial (idle)
             SetAnimationState(idle: true, walking: false);
@@ -194,11 +201,7 @@ public class GroundPlacementController : MonoBehaviour
                 targetPosition = hitInfo.point;
 
                 // Obtener el Animator si existe
-                avatarAnimator = spawnedAvatar.GetComponent<Animator>();
-                if (avatarAnimator == null)
-                {
-                    avatarAnimator = spawnedAvatar.GetComponentInChildren<Animator>();
-                }
+                GetAvatarAnimator(spawnedAvatar);
 
                 // Establecer estado inicial (idle)
                 SetAnimationState(idle: true, walking: false);
@@ -297,6 +300,18 @@ public class GroundPlacementController : MonoBehaviour
 
         if (HasAnimatorBool(avatarAnimator, walkBoolName))
             avatarAnimator.SetBool(walkBoolName, walking);
+    }
+
+    /// <summary>
+    /// Obtiene el Animator del avatar instanciado
+    /// </summary>
+    private void GetAvatarAnimator(GameObject avatar)
+    {
+        avatarAnimator = avatar.GetComponent<Animator>();
+        if (avatarAnimator == null)
+        {
+            avatarAnimator = avatar.GetComponentInChildren<Animator>();
+        }
     }
 
     /// <summary>
