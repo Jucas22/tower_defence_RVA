@@ -113,8 +113,6 @@ public class GroundPlacementController : MonoBehaviour
     /// </summary>
     void OnContentPlaced(ContentPositioningBehaviour behaviour)
     {
-        planeDetected = true;
-        
         // Crear un plano matemático para futuras intersecciones con raycast
         // Usamos la posición y normal del objeto contenido (Anchor)
         if (behaviour.AnchorStage != null)
@@ -122,6 +120,7 @@ public class GroundPlacementController : MonoBehaviour
             Vector3 planePosition = behaviour.AnchorStage.position;
             Vector3 planeNormal = behaviour.AnchorStage.up;
             groundPlane = new Plane(planeNormal, planePosition);
+            planeDetected = true;
             
             Debug.Log($"[GroundPlacementController] Plano detectado en posición {planePosition}");
         }
