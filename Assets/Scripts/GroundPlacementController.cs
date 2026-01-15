@@ -19,6 +19,8 @@ public class GroundPlacementController : MonoBehaviour
     [Header("Configuración de Movimiento")]
     [Tooltip("Velocidad de movimiento del avatar (metros/segundo)")]
     public float moveSpeed = 2.0f;
+    [Tooltip("Velocidad de rotación del avatar al girar hacia un destino")]
+    public float rotationSpeed = 10.0f;
     [Tooltip("Distancia mínima al destino para considerarse llegado")]
     public float stoppingDistance = 0.1f;
 
@@ -165,54 +167,19 @@ public class GroundPlacementController : MonoBehaviour
         }
 
         // Intentar usar el sistema de hit test de Vuforia
-        TrackableHit hit;
-        if (planeFinder.HitTest(ray, out hit))
+        if (planeFinder.HitTest(ray, out var hit))
         {
-            // Instanciar avatar en la posición del hit de Vuforia
-            spawnedAvatar = Instantiate(avatarPrefab, hit.Position, Quaternion.identity);
-            spawnedAvatar.SetActive(true);
-            
-            avatarPlaced = true;
-            targetPosition = hit.Position;
-
-            // Obtener el Animator si existe
-            GetAvatarAnimator(spawnedAvatar);
-
-            // Establecer estado inicial (idle)
-            SetAnimationState(idle: true, walking: false);
-
-            // Crear plano de referencia usando la normal del hit
-            groundPlane = new Plane(hit.Normal, hit.Position);
-            planeDetected = true;
-
+            // Instanciar y configurar avatar usando HitTest de Vuforia
+            InstantiateAndSetupAvatar(hit.Position, hit.Normal);
             Debug.Log($"[GroundPlacementController] Avatar colocado en {hit.Position}");
         }
         else
         {
             // Fallback: usar Physics.Raycast si el HitTest de Vuforia no funciona
-            RaycastHit hitInfo;
-            if (Physics.Raycast(ray, out hitInfo))
+            if (Physics.Raycast(ray, out var hitInfo))
             {
-                // Instanciar avatar en la posición del hit
-                spawnedAvatar = Instantiate(avatarPrefab, hitInfo.point, Quaternion.identity);
-                spawnedAvatar.SetActive(true);
-                
-                avatarPlaced = true;
-                targetPosition = hitInfo.point;
-
-                // Obtener el Animator si existe
-                GetAvatarAnimator(spawnedAvatar);
-
-                // Establecer estado inicial (idle)
-                SetAnimationState(idle: true, walking: false);
-
-                // Crear plano de referencia
-                if (!planeDetected)
-                {
-                    groundPlane = new Plane(hitInfo.normal, hitInfo.point);
-                    planeDetected = true;
-                }
-
+                // Instanciar y configurar avatar usando Physics
+                InstantiateAndSetupAvatar(hitInfo.point, hitInfo.normal);
                 Debug.Log($"[GroundPlacementController] Avatar colocado en {hitInfo.point} (fallback Physics)");
             }
         }
@@ -226,8 +193,7 @@ public class GroundPlacementController : MonoBehaviour
         if (spawnedAvatar == null || !planeDetected)
             return;
 
-        float enter;
-        if (groundPlane.Raycast(ray, out enter))
+        if (groundPlane.Raycast(ray, out var enter))
         {
             Vector3 hitPoint = ray.GetPoint(enter);
             
@@ -270,7 +236,7 @@ public class GroundPlacementController : MonoBehaviour
             spawnedAvatar.transform.rotation = Quaternion.Slerp(
                 spawnedAvatar.transform.rotation,
                 targetRotation,
-                10f * Time.deltaTime
+                rotationSpeed * Time.deltaTime
             );
         }
 
@@ -300,6 +266,32 @@ public class GroundPlacementController : MonoBehaviour
 
         if (HasAnimatorBool(avatarAnimator, walkBoolName))
             avatarAnimator.SetBool(walkBoolName, walking);
+    }
+
+    /// <summary>
+    /// Instancia y configura el avatar en la posición especificada
+    /// </summary>
+    private void InstantiateAndSetupAvatar(Vector3 position, Vector3 normal)
+    {
+        // Instanciar avatar
+        spawnedAvatar = Instantiate(avatarPrefab, position, Quaternion.identity);
+        spawnedAvatar.SetActive(true);
+        
+        avatarPlaced = true;
+        targetPosition = position;
+
+        // Obtener el Animator si existe
+        GetAvatarAnimator(spawnedAvatar);
+
+        // Establecer estado inicial (idle)
+        SetAnimationState(idle: true, walking: false);
+
+        // Crear plano de referencia usando la normal
+        if (!planeDetected)
+        {
+            groundPlane = new Plane(normal, position);
+            planeDetected = true;
+        }
     }
 
     /// <summary>
