@@ -2,13 +2,17 @@ using System;
 using UnityEngine;
 using Vuforia;
 
-public class image_target_spawner : MonoBehaviour
+// Specific spawner for the Tower image target.
+// Instantiates the configured tower prefab in world space when the ImageTarget is detected,
+// forces its tag to "Tower", removes Vuforia trackable handlers so it stays visible,
+// and notifies listeners via the static TowerSpawned event.
+public class img_target_tower : MonoBehaviour
 {
-    [Tooltip("Prefab que se instanciará cuando se detecte este ImageTarget")]
+    [Tooltip("Prefab que se instanciara cuando se detecte este ImageTarget")]
     public GameObject prefabToSpawn;
 
-    [Tooltip("Si true, se instanciará solo una vez")]
-    public bool spawnOnce = false;
+    [Tooltip("Si true, se instanciara solo una vez")]
+    public bool spawnOnce = true;
 
     [Tooltip("Opcional: offset local aplicado al prefab instanciado")]
     public Vector3 positionOffset = Vector3.zero;
@@ -40,7 +44,6 @@ public class image_target_spawner : MonoBehaviour
 
     void OnObserverStatusChanged(ObserverBehaviour behaviour, TargetStatus targetStatus)
     {
-        // Use the runtime string name of the status so the code compiles regardless of exact enum type/name.
         var statusObj = targetStatus.Status;
         string statusName = statusObj.ToString().ToUpperInvariant();
 
@@ -51,8 +54,7 @@ public class image_target_spawner : MonoBehaviour
         if (isFound)
             OnFound();
 
-        // Helpful debug: prints the actual enum CLR type and value so you can confirm what your Vuforia exposes.
-        Debug.Log($"[ImageTargetSpawner] Status type: {statusObj.GetType().FullName}, value: {statusObj} (isFound={isFound})");
+        Debug.Log($"[img_target_tower] Status type: {statusObj.GetType().FullName}, value: {statusObj} (isFound={isFound})");
     }
 
     void OnFound()
@@ -60,36 +62,40 @@ public class image_target_spawner : MonoBehaviour
         if (prefabToSpawn == null) return;
         if (spawnOnce && hasSpawned) return;
 
-        // Instanciar en world space en la pose del ImageTarget
-        spawnedInstance = Instantiate(prefabToSpawn, transform.position, transform.rotation);
-        spawnedInstance.transform.position += spawnedInstance.transform.TransformDirection(positionOffset);
-        spawnedInstance.transform.rotation = spawnedInstance.transform.rotation * Quaternion.Euler(rotationOffset);
-        spawnedInstance.transform.localScale = Vector3.Scale(spawnedInstance.transform.localScale, scale);
+        // Calculate world pose using the ImageTarget transform and the provided local offsets
+        Vector3 worldPos = transform.TransformPoint(positionOffset);
+        Quaternion worldRot = transform.rotation * Quaternion.Euler(rotationOffset);
 
-        // Asegurar que NO sea child del ImageTarget para que Vuforia no lo habilite/deshabilite automáticamente
-        spawnedInstance.transform.SetParent(null, true);
+        // Instantiate at computed world pose
+        //spawnedInstance = Instantiate(prefabToSpawn, worldPos, worldRot);
 
-        // Eliminar handlers de Vuforia que puedan desactivar renderers al perder tracking
-        RemoveVuforiaTrackableHandlers(spawnedInstance);
+        // Optionally override scale (if user set scale != (1,1,1))
+        if (scale != Vector3.one)
+            spawnedInstance.transform.localScale = scale;
 
-        // Intentar asegurar la tag "Tower" para que otros scripts la detecten mediante FindWithTag
+        // Ensure it's active and not parented to target so Vuforia won't toggle it
+        //spawnedInstance.SetActive(true);
+        //spawnedInstance.transform.SetParent(null, true);
+
+        // Remove handlers of Vuforia that could hide it when other targets are tracked
+        //RemoveVuforiaTrackableHandlers(spawnedInstance);
+
+        // Force tag "Tower"
         try
         {
             spawnedInstance.tag = "Tower";
         }
         catch (UnityException ex)
         {
-            Debug.LogWarning("[ImageTargetSpawner] La tag 'Tower' no está definida en el proyecto. Por favor añádela en Unity Tags. " + ex.Message);
+            Debug.LogWarning($"[img_target_tower] La tag 'Tower' no esta definida en el proyecto. " + ex.Message);
         }
 
         hasSpawned = true;
 
-        Debug.Log($"[ImageTargetSpawner] Spawned tower instance: {spawnedInstance.name}");
+        Debug.Log($"[img_target_tower] Spawned tower: {spawnedInstance.name} pos={spawnedInstance.transform.position} scale={spawnedInstance.transform.localScale}");
 
-        // Notificar mediante evento estático a interesados (p. ej. monsters) para que reaccionen inmediatamente
+        // Notify listeners
         TowerSpawned?.Invoke(spawnedInstance.transform);
-
-        // No parentear al ImageTarget -> se quedará en world space aunque se pierda tracking
     }
 
     // Remove common Vuforia components from the spawned hierarchy that might auto-enable/disable renderers
@@ -97,7 +103,6 @@ public class image_target_spawner : MonoBehaviour
     {
         if (root == null) return;
 
-        // Remove components whose type name indicates they are Vuforia handlers
         var monoBehaviours = root.GetComponentsInChildren<MonoBehaviour>(true);
         foreach (var mb in monoBehaviours)
         {
@@ -113,7 +118,6 @@ public class image_target_spawner : MonoBehaviour
             }
         }
 
-        // Also ensure renderers are enabled so object remains visible
         var renderers = root.GetComponentsInChildren<Renderer>(true);
         foreach (var r in renderers)
             r.enabled = true;
