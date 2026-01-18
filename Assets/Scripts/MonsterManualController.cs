@@ -96,7 +96,7 @@ public class MonsterManualController : MonoBehaviour
         transform.position = newPos; // fuerza la posición aunque otro script/parent la resetease
 
         Vector3 delta = transform.position - before;
-        Debug.Log($"[MonsterManualController] Parent={transform.parent?.name ?? "<null>"} | Pos delta: {delta} | from {before} to {transform.position}");
+        // Debug.Log($"[MonsterManualController] Parent={transform.parent?.name ?? "<null>"} | Pos delta: {delta} | from {before} to {transform.position}");
 
         SetWalking(true);
     }
@@ -105,5 +105,22 @@ public class MonsterManualController : MonoBehaviour
     {
         if (animator != null && !string.IsNullOrEmpty(walkBoolName))
             animator.SetBool(walkBoolName, walking);
+    }
+
+    void OnTriggerEnter(Collider collision)
+    {
+        // Verifica si el objeto que tocó es una torre
+        if (collision.CompareTag("Tower"))
+        {
+            Debug.Log($"[monster_controller] ¡El monstruo ha alcanzado la torre!");
+
+            // Aquí puedes hacer lo que quieras:
+            // - Destruir la torre
+            // - Reproducir animación de ataque
+            // - Sumar puntos
+            // - Etc.
+
+            Destroy(collision.gameObject); // destruye la torre
+        }
     }
 }
