@@ -30,25 +30,44 @@ public class ARMonsterPlacer : MonoBehaviour
     {
         if (arCamera == null)
         {
-            // Intentar encontrar la cámara por tag si no se asignó
+            // Intentar encontrar la cï¿½mara por tag si no se asignï¿½
             arCamera = Camera.main;
         }
     }
 
     /// <summary>
     /// Activa o desactiva el modo de colocar monstruo (llamado desde la UI).
+    /// Si se desactiva, destruye el monstruo actual.
     /// </summary>
-    public void SetPlacingMode(bool active)
+    public void SetPlacingMode()
     {
-        placingMode = active;
-        Debug.Log($"[ARMonsterPlacer] Modo colocar monstruo: {placingMode}");
+        if (placingMode)
+            placingMode = false;
+        else
+            placingMode = true;
+
+        Debug.Log($"[ARMonsterPlacer] Modo de colocaciÃ³n {(placingMode ? "activado" : "desactivado")}.");
+        if (!placingMode && currentMonster != null)
+        {
+            Destroy(currentMonster);
+            currentMonster = null;
+        }
+    }
+    public void SetPlacingModeToggle(bool activado)
+    {
+        placingMode = activado;
+
+        Debug.Log($"[ARMonsterPlacer] Modo de colocaciÃ³n {(placingMode ? "activado" : "desactivado")}.");
+        if (!placingMode && currentMonster != null)
+        {
+            Destroy(currentMonster);
+            currentMonster = null;
+        }
     }
 
     void Update()
     {
-        if (!placingMode) return;
-
-        // Evitar tap si el dedo está sobre un elemento UI
+        // Evitar tap si el dedo estï¿½ sobre un elemento UI
         //if (EventSystem.current != null &&
         //    EventSystem.current.IsPointerOverGameObject(0))
         //    return;
@@ -65,28 +84,28 @@ public class ARMonsterPlacer : MonoBehaviour
 
         if (!placingMode) return;
 
-        // Posición y “click” según dispositivo
+        // Posiciï¿½n y ï¿½clickï¿½ segï¿½n dispositivo
         bool clicked = false;
         Vector2 screenPos = Vector2.zero;
 
-        // 1) Ratón
+        // 1) Ratï¿½n
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             clicked = true;
             screenPos = Mouse.current.position.ReadValue();
 
-            // Evitar UI (versión nuevo Input System)
+            // Evitar UI (versiï¿½n nuevo Input System)
             if (EventSystem.current != null &&
                 EventSystem.current.IsPointerOverGameObject())
                 return;
         }
-        // 2) Pantalla táctil
+        // 2) Pantalla tï¿½ctil
         else if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
         {
             clicked = true;
             screenPos = Touchscreen.current.primaryTouch.position.ReadValue();
 
-            // Si tienes EventSystem configurado con UI, en móvil normalmente también pasa por aquí
+            // Si tienes EventSystem configurado con UI, en mï¿½vil normalmente tambiï¿½n pasa por aquï¿½
             if (EventSystem.current != null &&
                 EventSystem.current.IsPointerOverGameObject(0))
                 return;
@@ -122,22 +141,22 @@ public class ARMonsterPlacer : MonoBehaviour
             return;
         }
 
-        // Lanzar un rayo desde la cámara a través del punto de pantalla
+        // Lanzar un rayo desde la cï¿½mara a travï¿½s del punto de pantalla
         Ray ray = arCamera.ScreenPointToRay(screenPosition);
 
-        // Usaremos un simple Raycast de física. Asegúrate de que el plano/anchor tenga collider,
+        // Usaremos un simple Raycast de fï¿½sica. Asegï¿½rate de que el plano/anchor tenga collider,
         // o que coloques un 'planeCollider' invisble donde quieras que sea "suelo".
         if (Physics.Raycast(ray, out RaycastHit hitInfo, 50f))
         {
             Vector3 spawnPos = hitInfo.point;
             Quaternion spawnRot = Quaternion.identity;
 
-            // Opcional: orientar el monstruo mirando hacia la cámara pero sin inclinarse
+            // Opcional: orientar el monstruo mirando hacia la cï¿½mara pero sin inclinarse
             Vector3 lookDir = arCamera.transform.position - spawnPos;
             lookDir.y = 0f;
             if (lookDir.sqrMagnitude > 0.0001f)
             {
-                spawnRot = Quaternion.LookRotation(-lookDir); // que mire en sentido opuesto a la cámara
+                spawnRot = Quaternion.LookRotation(-lookDir); // que mire en sentido opuesto a la cï¿½mara
             }
 
             if (singleMonster && currentMonster != null)
@@ -146,16 +165,18 @@ public class ARMonsterPlacer : MonoBehaviour
             }
 
             currentMonster = Instantiate(monsterPrefab, spawnPos, spawnRot);
+            currentMonster.transform.SetParent(null, true); // salir de cualquier anchor/trackable
             currentMonster.SetActive(true);
 
             Debug.Log($"[ARMonsterPlacer] Monstruo colocado en {spawnPos}");
 
-            // Si quieres que al colocar el monstruo se salga del modo colocar:
-            // placingMode = false;
+            // Al colocar el monstruo, desactivar el modo de colocaciÃ³n para que no se pueda mover
+            placingMode = false;
+            Debug.Log($"[ARMonsterPlacer] Modo de colocaciÃ³n desactivado automÃ¡ticamente tras instanciar monstruo.");
         }
         else
         {
-            Debug.Log("[ARMonsterPlacer] Raycast no ha tocado ningún collider.");
+            Debug.Log("[ARMonsterPlacer] Raycast no ha tocado ningï¿½n collider.");
         }
     }
 }

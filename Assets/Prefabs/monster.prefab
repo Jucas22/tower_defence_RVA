@@ -74,36 +74,17 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -4063357086138592178}
+      addedObject: {fileID: 4819434790735808007}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -7922347331472054689}
+      addedObject: {fileID: -2966048168585959189}
   m_SourcePrefab: {fileID: 100100000, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
 --- !u!1 &3036873571851086869 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
   m_PrefabInstance: {fileID: 2802450344590283076}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-4063357086138592178
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3036873571851086869}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 192bbef46efb22a4c85b1a5ab2dc265a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::monster_controller
-  towerTag: Tower
-  speed: 1.2
-  stoppingDistance: 0.6
-  searchInterval: 0.5
-  animator: {fileID: 0}
-  stayBoolName: is_staying
-  walkBoolName: is_walking
---- !u!114 &-7922347331472054689
+--- !u!114 &4819434790735808007
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -117,4 +98,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterManualController
   moveSpeed: 1.5
   rotateSpeed: 6
-  joystick: {fileID: 4651208850924162316, guid: ae5aa4c1d66c0834780b7ebf9062f58d, type: 3}
+  joystick: {fileID: 0}
+--- !u!54 &-2966048168585959189
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3036873571851086869}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 80
+  m_CollisionDetection: 0

@@ -1,35 +1,62 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // si usas nuevo Input System
+using UnityEngine.InputSystem; // Nuevo Input System
 
-[RequireComponent(typeof(monster_controller))]
 public class MonsterManualController : MonoBehaviour
 {
     [Header("Movimiento")]
-    public float moveSpeed = 1.5f;
-    public float rotateSpeed = 6f;
+    public float moveSpeed = 0.01f;
 
     [Header("Joystick (opcional)")]
     public SimpleJoystick joystick;
 
-    monster_controller autoController;
+    [Header("Animación")]
+    [SerializeField] Animator animator;
+    [SerializeField] string walkBoolName = "is_walking"; // cámbialo si tu parámetro se llama distinto
+
+
+    Rigidbody rb;
+    Vector2 _inputDir;
+    bool _warnedNoJoystick;
 
     void Awake()
     {
-        autoController = GetComponent<monster_controller>();
+        rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            Debug.LogError($"{name}: No tiene Rigidbody. Añadiendo uno automáticamente.");
+            rb = gameObject.AddComponent<Rigidbody>();
+            rb.isKinematic = true;
+        }
+
+        rb.isKinematic = true;
+        rb.useGravity = false;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
+
+        if (joystick == null)
+            joystick = FindFirstObjectByType<SimpleJoystick>();
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
     {
-        Vector2 inputDir = Vector2.zero;
+        _inputDir = Vector2.zero;
 
-        // 1) Joystick (m�vil o PC) si est� asignado
+        // 1) Joystick
         if (joystick != null)
         {
-            inputDir = joystick.Direction;
+            _inputDir = joystick.Direction;
+        }
+        else if (!_warnedNoJoystick)
+        {
+            Debug.LogWarning("[MonsterManualController] Joystick es NULL!");
+            _warnedNoJoystick = true;
         }
 
-        // 2) Teclado (solo en PC/editor) como apoyo
 #if UNITY_EDITOR || UNITY_STANDALONE
+        // 2) Teclado (solo editor/standalone)
         if (Keyboard.current != null)
         {
             Vector2 keyboardInput = Vector2.zero;
@@ -39,35 +66,44 @@ public class MonsterManualController : MonoBehaviour
             if (Keyboard.current.dKey.isPressed) keyboardInput.x += 1;
 
             if (keyboardInput != Vector2.zero)
-                inputDir = keyboardInput.normalized;
+                _inputDir = keyboardInput.normalized;
         }
 #endif
+    }
 
-        // Si no hay input, no movemos
-        if (inputDir == Vector2.zero)
+    void FixedUpdate()
+    {
+        if (_inputDir == Vector2.zero || rb == null)
         {
-            // dejar que el monster_controller haga lo que quiera (stay/walk) o forzar idle
+            SetWalking(false);
             return;
         }
 
-        // Opcional: cuando controlas manualmente, desactiva la persecuci�n auto
-        if (autoController != null)
-        {
-            // Por simplicidad, puedes desactivar el script
-            autoController.enabled = false;
-        }
+        Vector3 move = new Vector3(_inputDir.x, 0f, _inputDir.y);
 
-        // Convertir input (x,z) a movimiento en mundo desde la perspectiva local del monstruo
-        Vector3 move = new Vector3(inputDir.x, 0f, inputDir.y); // x = izquierda/derecha, y = adelante/atr�s
-
-        // Rotar hacia la direcci�n de movimiento
+        // Rotación hacia la dirección de movimiento
         if (move.sqrMagnitude > 0.0001f)
         {
-            Quaternion targetRot = Quaternion.LookRotation(move);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.LookRotation(move);
         }
 
-        // Mover
-        transform.position += move.normalized * moveSpeed * Time.deltaTime;
+        // Movimiento: forzamos posición en Transform y también por Rigidbody
+        Vector3 before = transform.position;
+        Vector3 newPos = before + move.normalized * moveSpeed * Time.fixedDeltaTime * 0.1f;
+
+        // Si hay colisiones, usa MovePosition; si algún padre lo resetea, el Transform se fuerza igualmente
+        rb.MovePosition(newPos);
+        transform.position = newPos; // fuerza la posición aunque otro script/parent la resetease
+
+        Vector3 delta = transform.position - before;
+        Debug.Log($"[MonsterManualController] Parent={transform.parent?.name ?? "<null>"} | Pos delta: {delta} | from {before} to {transform.position}");
+
+        SetWalking(true);
+    }
+
+    void SetWalking(bool walking)
+    {
+        if (animator != null && !string.IsNullOrEmpty(walkBoolName))
+            animator.SetBool(walkBoolName, walking);
     }
 }
