@@ -19,6 +19,14 @@ public class img_target_tower : MonoBehaviour
     public Vector3 rotationOffset = Vector3.zero;
     public Vector3 scale = Vector3.one;
 
+    [Header("AR/Plano raíz para parenting dinámico")]
+    [Tooltip("Padre raíz para la torre (plano de test o GroundAnchorStage)")]
+    public Transform rootParent;
+    [Tooltip("Si true, busca el padre por nombre en la escena (útil para cambiar entre test y AR)")]
+    public bool findParentByName = false;
+    [Tooltip("Nombre del objeto raíz a buscar si findParentByName es true")]
+    public string parentObjectName = "TestPlane";
+
     // Evento global que notifica a otros scripts cuando se ha instanciado una torre
     public static Action<Transform> TowerSpawned;
 
@@ -66,19 +74,21 @@ public class img_target_tower : MonoBehaviour
         Vector3 worldPos = transform.TransformPoint(positionOffset);
         Quaternion worldRot = transform.rotation * Quaternion.Euler(rotationOffset);
 
-        // Instantiate at computed world pose
-        //spawnedInstance = Instantiate(prefabToSpawn, worldPos, worldRot);
+        // Determinar el padre adecuado para la torre
+        Transform parentToUse = rootParent;
+        if (findParentByName && !string.IsNullOrEmpty(parentObjectName))
+        {
+            GameObject found = GameObject.Find(parentObjectName);
+            if (found != null)
+                parentToUse = found.transform;
+            else
+                Debug.LogWarning($"[img_target_tower] No se encontró el objeto raíz '{parentObjectName}' en la escena.");
+        }
 
-        // Optionally override scale (if user set scale != (1,1,1))
+        spawnedInstance = Instantiate(prefabToSpawn, worldPos, worldRot, parentToUse);
         if (scale != Vector3.one)
             spawnedInstance.transform.localScale = scale;
-
-        // Ensure it's active and not parented to target so Vuforia won't toggle it
-        //spawnedInstance.SetActive(true);
-        //spawnedInstance.transform.SetParent(null, true);
-
-        // Remove handlers of Vuforia that could hide it when other targets are tracked
-        //RemoveVuforiaTrackableHandlers(spawnedInstance);
+        spawnedInstance.SetActive(true);
 
         // Force tag "Tower"
         try

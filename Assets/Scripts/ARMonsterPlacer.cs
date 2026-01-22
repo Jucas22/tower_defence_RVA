@@ -22,6 +22,14 @@ public class ARMonsterPlacer : MonoBehaviour
     [Tooltip("Si true, solo se puede tener un monstruo a la vez")]
     public bool singleMonster = true;
 
+    [Header("AR/Plano raíz para parenting dinámico")]
+    [Tooltip("Padre raíz para el monster (plano de test o GroundAnchorStage)")]
+    public Transform rootParent;
+    [Tooltip("Si true, busca el padre por nombre en la escena (útil para cambiar entre test y AR)")]
+    public bool findParentByName = false;
+    [Tooltip("Nombre del objeto raíz a buscar si findParentByName es true")]
+    public string parentObjectName = "TestPlane";
+
     // Estado interno
     bool placingMode = false;          // si estamos en modo "colocar monstruo"
     GameObject currentMonster;         // referencia al monstruo ya instanciado
@@ -159,13 +167,18 @@ public class ARMonsterPlacer : MonoBehaviour
                 spawnRot = Quaternion.LookRotation(-lookDir); // que mire en sentido opuesto a la c�mara
             }
 
-            if (singleMonster && currentMonster != null)
+            // Determinar el padre adecuado para el monster
+            Transform parentToUse = rootParent;
+            if (findParentByName && !string.IsNullOrEmpty(parentObjectName))
             {
-                Destroy(currentMonster);
+                GameObject found = GameObject.Find(parentObjectName);
+                if (found != null)
+                    parentToUse = found.transform;
+                else
+                    Debug.LogWarning($"[ARMonsterPlacer] No se encontró el objeto raíz '{parentObjectName}' en la escena.");
             }
 
-            currentMonster = Instantiate(monsterPrefab, spawnPos, spawnRot);
-            currentMonster.transform.SetParent(null, true); // salir de cualquier anchor/trackable
+            currentMonster = Instantiate(monsterPrefab, spawnPos, spawnRot, parentToUse);
             currentMonster.SetActive(true);
 
             Debug.Log($"[ARMonsterPlacer] Monstruo colocado en {spawnPos}");
