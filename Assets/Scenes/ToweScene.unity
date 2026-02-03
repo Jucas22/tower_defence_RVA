@@ -237,10 +237,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c93100e71eb4e442b02d64d08957dc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::img_target_turret
-  prefabToSpawn: {fileID: 1296506138347964910, guid: 744a1f71e012f5c4a91790e030af7a3b, type: 3}
+  prefabToSpawn: {fileID: 3565550701267566952, guid: b9d4a1c6764cbbc458244a059777b6f8, type: 3}
   spawnOnce: 1
   positionOffset: {x: 0, y: 0.1, z: 0}
-  rotationOffset: {x: -90, y: 0, z: 0}
+  rotationOffset: {x: 0, y: 0, z: 0}
   scale: {x: 1, y: 1, z: 1}
   rootParent: {fileID: 162635645}
   findParentByName: 1
@@ -522,8 +522,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.326, y: 0, z: -0.004}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1971772391}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -539,13 +539,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c93100e71eb4e442b02d64d08957dc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::img_target_turret
-  prefabToSpawn: {fileID: 1296506138347964910, guid: 744a1f71e012f5c4a91790e030af7a3b, type: 3}
+  prefabToSpawn: {fileID: 3565550701267566952, guid: b9d4a1c6764cbbc458244a059777b6f8, type: 3}
   spawnOnce: 1
   positionOffset: {x: 0, y: 0, z: 0}
-  rotationOffset: {x: -90, y: 0, z: 0}
+  rotationOffset: {x: 0, y: 0, z: 0}
   scale: {x: 1, y: 1, z: 1}
   rootParent: {fileID: 322773195}
-  findParentByName: 1
+  findParentByName: 0
   parentObjectName: TestPlane
 --- !u!114 &322773198
 MonoBehaviour:
@@ -1220,8 +1220,8 @@ Transform:
   m_GameObject: {fileID: 1671193583}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.283, y: 0, z: 0.001}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalPosition: {x: -0.154, y: 0, z: 0.071}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1971772391}

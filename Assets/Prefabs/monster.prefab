@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.01
+      value: 0.0065
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.01
+      value: 0.0065
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.01
+      value: 0.0065
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
       propertyPath: m_LocalPosition.x
@@ -60,6 +60,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
       propertyPath: m_Name
       value: monster
@@ -85,6 +89,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
       insertIndex: -1
       addedObject: {fileID: -4843577022588447719}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6397007822761257332}
   m_SourcePrefab: {fileID: 100100000, guid: 88352bca77f9bd742ab9aa3ec005a757, type: 3}
 --- !u!1 &3036873571851086869 stripped
 GameObject:
@@ -153,5 +160,18 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.6, y: 3, z: 1.6}
+  m_Size: {x: 1.2, y: 10, z: 1.2}
   m_Center: {x: 0, y: 1.3, z: 0}
+--- !u!114 &6397007822761257332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3036873571851086869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 054314d9ade1ef1439c5d3662d6cf4ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterHealth
+  maxHealth: 100

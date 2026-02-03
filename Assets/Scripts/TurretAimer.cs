@@ -2,8 +2,18 @@ using UnityEngine;
 using System.Collections;
 
 // Este script hace que la torreta apunte siempre al monster en la escena y active la animación al instanciarse
+
 public class TurretAimer : MonoBehaviour
 {
+    [Header("Disparo")]
+    [Tooltip("Prefab de la bala a disparar")]
+    public GameObject bulletPrefab;
+    [Tooltip("Punto de spawn de la bala (puede ser la boca del cañón)")]
+    public Transform firePoint;
+    [Tooltip("Tiempo entre disparos (segundos)")]
+    public float fireCooldown = 2.0f; // Aumentado para reducir la cadencia
+    private float fireTimer = 0f;
+
     [Tooltip("Tag del objetivo a seguir (Monster)")]
     public string targetTag = "Monster";
 
@@ -20,7 +30,7 @@ public class TurretAimer : MonoBehaviour
     public float xAxisCorrection = 90f;
 
     [Tooltip("Corrección fina en Y para ajustar la puntería (grados)")]
-    public float yAxisCorrection = 0f;
+    public float yAxisCorrection = -75f;
 
     private Transform target;
     private bool animationPlayed = false;
@@ -37,17 +47,26 @@ public class TurretAimer : MonoBehaviour
     {
         Debug.Log("[TurretAimer] Esperando 1s antes de activar animación...");
         yield return new WaitForSeconds(1f);
-        Debug.Log($"[TurretAimer] Lanzando trigger '{activateTrigger}'");
-        animator.SetTrigger(activateTrigger);
+        if (animator != null)
+        {
+            Debug.Log($"[TurretAimer] Lanzando trigger '{activateTrigger}'");
+            animator.SetTrigger(activateTrigger);
+            // Si después de 2 segundos no se ha llamado al evento de animación, forzamos el inicio
+            Invoke(nameof(OnDeployAnimationFinished), 2.0f);
+        }
+        else
+        {
+            readyToAim = true;
+        }
         animationPlayed = true;
-        // Ahora la animación notificará al script mediante Animation Event
     }
 
     // Este método debe ser llamado por un Animation Event al final de la animación de despliegue
     public void OnDeployAnimationFinished()
     {
+        if (readyToAim) return; // Evita ejecutarlo dos veces si el invoke y el evento coinciden
         readyToAim = true;
-        Debug.Log("[TurretAimer] Animation Event recibido: listo para rotar.");
+        Debug.Log("[TurretAimer] Turret lista para rotar.");
     }
 
     void Update()
@@ -67,7 +86,7 @@ public class TurretAimer : MonoBehaviour
             }
             else
             {
-                Debug.Log("[TurretAimer] No se encontró ningún Monster en la escena.");
+                // Debug.Log("[TurretAimer] No se encontró ningún Monster en la escena.");
                 return;
             }
         }
@@ -75,35 +94,60 @@ public class TurretAimer : MonoBehaviour
         Vector3 turretPos = rotatingPart ? rotatingPart.position : transform.position;
         Vector3 targetPos = target.position;
         Vector3 lookDir = targetPos - turretPos;
-        lookDir.y = 0; // Solo rotar en el eje Y (horizontal)
+        lookDir.y = 0; // Forzamos que la torre solo rote horizontalmente
 
         // Debug visual y de consola
-        Debug.DrawLine(turretPos, targetPos, Color.red); // Línea entre torreta y monster
-        Debug.DrawRay(turretPos, (rotatingPart ? rotatingPart.forward : transform.forward) * 2f, Color.green); // Dirección actual de la torreta
-        // Debug.Log($"[TurretAimer] TurretPos: {turretPos}, TargetPos: {targetPos}, lookDir: {lookDir}, sqrMagnitude: {lookDir.sqrMagnitude}, Forward: {(rotatingPart ? rotatingPart.forward : transform.forward)}");
+        Debug.DrawLine(turretPos, targetPos, Color.red);
+        Debug.DrawRay(turretPos, (rotatingPart ? rotatingPart.forward : transform.forward) * 2f, Color.green);
 
         if (lookDir.sqrMagnitude > 0.01f)
         {
             Quaternion lookRot = Quaternion.LookRotation(lookDir);
             if (rotatingPart)
             {
-                Vector3 euler = rotatingPart.rotation.eulerAngles;
+                // Aplicamos la rotación Y del cálculo y mantenemos X y Z controlados
                 float targetY = lookRot.eulerAngles.y + yAxisCorrection;
-                // Aplica corrección en X para modelos tumbados y en Y para ajuste fino
-                rotatingPart.rotation = Quaternion.Euler(xAxisCorrection, targetY, euler.z);
-                Debug.Log($"[TurretAimer] Rotando rotatingPart '{rotatingPart.name}' a X={xAxisCorrection}, Y={targetY}");
+                rotatingPart.rotation = Quaternion.Euler(xAxisCorrection, targetY, 0);
             }
             else
             {
-                Vector3 euler = transform.rotation.eulerAngles;
                 float targetY = lookRot.eulerAngles.y + yAxisCorrection;
-                transform.rotation = Quaternion.Euler(euler.x, targetY, euler.z);
-                // Debug.Log($"[TurretAimer] Rotando objeto principal a Y={targetY}");
+                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, targetY, 0);
             }
         }
         else
         {
-            Debug.Log("[TurretAimer] lookDir demasiado pequeño, no se rota.");
+            // Debug.Log("[TurretAimer] lookDir demasiado pequeño, no se rota.");
+        }
+
+        // Disparo automático
+        fireTimer -= Time.deltaTime;
+
+        if (fireTimer <= 0f)
+        {
+            if (bulletPrefab == null) Debug.LogWarning("[TurretAimer] No hay bulletPrefab asignado.");
+            if (target == null)
+            {
+                // Intentar buscar de nuevo si se perdió el target
+                var monsterObj = GameObject.FindGameObjectWithTag(targetTag);
+                if (monsterObj != null) target = monsterObj.transform;
+            }
+
+            if (bulletPrefab != null && target != null)
+            {
+                Vector3 spawnPos = rotatingPart ? rotatingPart.position : transform.position;
+                spawnPos.y = 0.01f;
+
+                Vector3 shootDir = (target.position - spawnPos);
+                shootDir.y = 0;
+                Vector3 dirNormalized = shootDir.normalized;
+
+                Quaternion bulletRot = Quaternion.LookRotation(dirNormalized);
+
+                Debug.Log($"[TurretAimer] INSTANCIANDO BALA en {spawnPos} hacia {target.position}");
+                GameObject bullet = Instantiate(bulletPrefab, spawnPos, bulletRot);
+                fireTimer = fireCooldown;
+            }
         }
     }
 }
