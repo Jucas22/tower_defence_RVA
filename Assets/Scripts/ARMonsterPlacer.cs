@@ -32,6 +32,7 @@ public class ARMonsterPlacer : MonoBehaviour
 
     // Estado interno
     bool placingMode = false;          // si estamos en modo "colocar monstruo"
+    bool hasSpawnedOnce = false;       // para bloquear futuras colocaciones
     GameObject currentMonster;         // referencia al monstruo ya instanciado
 
     void Awake()
@@ -49,6 +50,8 @@ public class ARMonsterPlacer : MonoBehaviour
     /// </summary>
     public void SetPlacingMode()
     {
+        if (hasSpawnedOnce) return; // Si ya se spawned, no volver a entrar en modo colocación
+
         if (placingMode)
             placingMode = false;
         else
@@ -63,6 +66,12 @@ public class ARMonsterPlacer : MonoBehaviour
     }
     public void SetPlacingModeToggle(bool activado)
     {
+        if (hasSpawnedOnce)
+        {
+            placingMode = false;
+            return;
+        }
+
         placingMode = activado;
 
         Debug.Log($"[ARMonsterPlacer] Modo de colocación {(placingMode ? "activado" : "desactivado")}.");
@@ -191,9 +200,10 @@ public class ARMonsterPlacer : MonoBehaviour
 
             Debug.Log($"[ARMonsterPlacer] Monstruo colocado en {spawnPos}");
 
-            // Al colocar el monstruo, desactivar el modo de colocación para que no se pueda mover
+            // Al colocar el monstruo, desactivar el modo de colocación permanentemente
             placingMode = false;
-            Debug.Log($"[ARMonsterPlacer] Modo de colocación desactivado automáticamente tras instanciar monstruo.");
+            hasSpawnedOnce = true;
+            Debug.Log($"[ARMonsterPlacer] Modo de colocación bloqueado permanentemente.");
         }
         else
         {

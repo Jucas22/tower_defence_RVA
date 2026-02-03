@@ -11,7 +11,7 @@ public class TurretAimer : MonoBehaviour
     [Tooltip("Punto de spawn de la bala (puede ser la boca del cañón)")]
     public Transform firePoint;
     [Tooltip("Tiempo entre disparos (segundos)")]
-    public float fireCooldown = 2.0f; // Aumentado para reducir la cadencia
+    public float fireCooldown = 0.5f; // Aumentado para reducir la cadencia
     private float fireTimer = 0f;
 
     [Tooltip("Tag del objetivo a seguir (Monster)")]
@@ -69,7 +69,8 @@ public class TurretAimer : MonoBehaviour
         Debug.Log("[TurretAimer] Turret lista para rotar.");
     }
 
-    void Update()
+    // Cambiado a LateUpdate para que la rotación se aplique después de que el Animator procese las animaciones
+    void LateUpdate()
     {
         if (!readyToAim)
         {

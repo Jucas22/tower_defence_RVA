@@ -114,11 +114,10 @@ public class MonsterManualController : MonoBehaviour
         {
             Debug.Log($"[monster_controller] ¡El monstruo ha alcanzado la torre!");
 
-            // Aquí puedes hacer lo que quieras:
-            // - Destruir la torre
-            // - Reproducir animación de ataque
-            // - Sumar puntos
-            // - Etc.
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.TriggerVictory();
+            }
 
             Destroy(collision.gameObject); // destruye la torre
         }
