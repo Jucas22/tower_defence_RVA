@@ -30,7 +30,7 @@ public class TurretAimer : MonoBehaviour
     public float xAxisCorrection = 90f;
 
     [Tooltip("Corrección fina en Y para ajustar la puntería (grados)")]
-    public float yAxisCorrection = -75f;
+    public float yAxisCorrection = -155f;
 
     private Transform target;
     private bool animationPlayed = false;
@@ -135,17 +135,29 @@ public class TurretAimer : MonoBehaviour
 
             if (bulletPrefab != null && target != null)
             {
-                Vector3 spawnPos = rotatingPart ? rotatingPart.position : transform.position;
-                spawnPos.y = 0.01f;
+                // Priorizar firePoint si está asignado, de lo contrario usar rotatingPart o el transform base
+                Vector3 spawnPos = firePoint != null ? firePoint.position : (rotatingPart != null ? rotatingPart.position : transform.position);
+                spawnPos.y = 0.1f;
 
+                // Calculamos la dirección hacia el objetivo
                 Vector3 shootDir = (target.position - spawnPos);
-                shootDir.y = 0;
                 Vector3 dirNormalized = shootDir.normalized;
 
-                Quaternion bulletRot = Quaternion.LookRotation(dirNormalized);
+                // Calculamos la rotación base hacia el objetivo
+                Quaternion baseRot = Quaternion.LookRotation(dirNormalized);
 
-                Debug.Log($"[TurretAimer] INSTANCIANDO BALA en {spawnPos} hacia {target.position}");
-                GameObject bullet = Instantiate(bulletPrefab, spawnPos, bulletRot);
+                // Aplicamos la misma corrección que la torreta para que la bala salga "de frente" 
+                // respecto a como vemos el modelo de la torreta
+                Quaternion bulletRot = baseRot * Quaternion.Euler(0, yAxisCorrection, 0);
+
+                // Instanciamos la bala como hija del mismo padre que la torreta para que mantenga su escala y base de coordenadas AR
+                GameObject bullet = Instantiate(bulletPrefab, spawnPos, bulletRot, transform.parent);
+
+                // Si la torreta tiene una escala muy diferente, forzamos que la bala use su escala local original 
+                // para que no se vea afectada por escalas de padres intermedios si el prefab ya viene bien.
+                // Sin embargo, al ser hijo de transform.parent, heredará la escala del mundo AR, que es lo correcto.
+
+                Debug.Log($"[TurretAimer] BALA instanciada en {spawnPos} (World) con padre {transform.parent?.name}");
                 fireTimer = fireCooldown;
             }
         }

@@ -137,6 +137,8 @@ public class ARMonsterPlacer : MonoBehaviour
 
     void TryPlaceMonsterAtTouch(Vector2 screenPosition)
     {
+        if (!placingMode) return;
+
         if (arCamera == null)
         {
             Debug.LogWarning("[ARMonsterPlacer] ARCamera no asignada.");
@@ -149,7 +151,13 @@ public class ARMonsterPlacer : MonoBehaviour
             return;
         }
 
-        // Lanzar un rayo desde la c�mara a trav�s del punto de pantalla
+        // Si singleMonster es true, destruir el anterior antes de poner uno nuevo (o no poner nada)
+        if (singleMonster && currentMonster != null)
+        {
+            Destroy(currentMonster);
+        }
+
+        // Lanzar un rayo desde la cámara a través del punto de pantalla
         Ray ray = arCamera.ScreenPointToRay(screenPosition);
 
         // Usaremos un simple Raycast de f�sica. Aseg�rate de que el plano/anchor tenga collider,
