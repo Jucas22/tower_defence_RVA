@@ -837,7 +837,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6226415, g: 0.0029369951, b: 0.0029369951, a: 1}
+  m_Color: {r: 0.7686275, g: 0.7686275, b: 0.7686275, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1157,7 +1157,7 @@ MonoBehaviour:
   statusText: {fileID: 1988554883}
   messagePanel: {fileID: 1345128544}
   monsterHealthBar: {fileID: 1187432049}
-  spawnMonsterButton: {fileID: 0}
+  spawnMonsterButton: {fileID: 1398236707}
   musicSource: {fileID: 1764161402}
   sfxSource: {fileID: 880599688}
   damageSound: {fileID: 8300000, guid: efd1eec81d836ee408463f7b55297055, type: 3}
@@ -1369,7 +1369,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2101042482}
   m_FillRect: {fileID: 2037759704}
   m_HandleRect: {fileID: 2101042480}
-  m_Direction: 1
+  m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 100
   m_WholeNumbers: 0
@@ -2267,7 +2267,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: 5, y: 0}
+  m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1866297083
@@ -2283,7 +2283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5176471, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

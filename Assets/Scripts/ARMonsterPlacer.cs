@@ -146,7 +146,16 @@ public class ARMonsterPlacer : MonoBehaviour
 
     void TryPlaceMonsterAtTouch(Vector2 screenPosition)
     {
-        if (!placingMode) return;
+        if (!placingMode || hasSpawnedOnce) return;
+
+        // Limpieza de seguridad: Si ya existe un monstruo en la escena, no creamos otro
+        if (GameObject.FindGameObjectWithTag("Monster") != null)
+        {
+            Debug.Log("[ARMonsterPlacer] Monstruo ya detectado en escena. Cancelando duplicado.");
+            placingMode = false;
+            hasSpawnedOnce = true;
+            return;
+        }
 
         if (arCamera == null)
         {

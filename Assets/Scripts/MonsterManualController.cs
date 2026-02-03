@@ -79,7 +79,9 @@ public class MonsterManualController : MonoBehaviour
             return;
         }
 
-        Vector3 move = new Vector3(_inputDir.x, 0f, _inputDir.y);
+        // Ajuste de ejes para que coincida con la orientación de la cámara/escena
+        // Si Izquierda -> Arriba e Arriba -> Derecha, rotamos los ejes 90º
+        Vector3 move = new Vector3(_inputDir.y, 0f, -_inputDir.x);
 
         // Rotación hacia la dirección de movimiento
         if (move.sqrMagnitude > 0.0001f)

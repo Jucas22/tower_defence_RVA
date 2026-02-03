@@ -26,11 +26,8 @@ public class TurretAimer : MonoBehaviour
     [Tooltip("Nombre del trigger para activar la animación de despliegue")]
     public string activateTrigger = "ActiveTurret";
 
-    [Tooltip("Corrección de ángulo en X para modelos tumbados (grados)")]
-    public float xAxisCorrection = 90f;
-
     [Tooltip("Corrección fina en Y para ajustar la puntería (grados)")]
-    public float yAxisCorrection = -155f;
+    public float yAxisCorrection = -80f;
 
     private Transform target;
     private bool animationPlayed = false;
@@ -104,15 +101,15 @@ public class TurretAimer : MonoBehaviour
         if (lookDir.sqrMagnitude > 0.01f)
         {
             Quaternion lookRot = Quaternion.LookRotation(lookDir);
+            float targetY = lookRot.eulerAngles.y + yAxisCorrection;
+
             if (rotatingPart)
             {
-                // Aplicamos la rotación Y del cálculo y mantenemos X y Z controlados
-                float targetY = lookRot.eulerAngles.y + yAxisCorrection;
-                rotatingPart.rotation = Quaternion.Euler(xAxisCorrection, targetY, 0);
+                // Volvemos a usar rotación global pero forzando solo el eje Y para evitar problemas con la base
+                rotatingPart.rotation = Quaternion.Euler(0, targetY, 0);
             }
             else
             {
-                float targetY = lookRot.eulerAngles.y + yAxisCorrection;
                 transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, targetY, 0);
             }
         }
