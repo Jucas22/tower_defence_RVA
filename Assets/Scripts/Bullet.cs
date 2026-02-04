@@ -8,7 +8,7 @@ public class Bullet : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("[Bullet] ¡He nacido! Inicializando...");
+        // Debug.Log("[Bullet] ¡He nacido! Inicializando...");
         // Forzamos que el Collider sea Trigger para que no choquen físicamente entre ellas
         Collider col = GetComponentInChildren<Collider>();
         if (col != null) col.isTrigger = true;
@@ -32,7 +32,7 @@ public class Bullet : MonoBehaviour
         // Debug para ver si la bala realmente tiene velocidad y se mueve
         if (Time.frameCount % 100 == 0)
         {
-            Debug.Log($"[Bullet] Pos: {transform.position}, Speed: {speed}");
+            // Debug.Log($"[Bullet] Pos: {transform.position}, Speed: {speed}");
         }
     }
 

@@ -2126,7 +2126,7 @@ GameObject:
   - component: {fileID: 6420886125694783297}
   - component: {fileID: -6237270734315828}
   - component: {fileID: 2409141206851066279}
-  - component: {fileID: -1874841938610736499}
+  - component: {fileID: 320851366776486264}
   m_Layer: 0
   m_Name: TorretaCorrecta
   m_TagString: Turret
@@ -2143,7 +2143,7 @@ Transform:
   m_GameObject: {fileID: 3565550701267566952}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -488.42722, y: 0, z: 290.0199}
+  m_LocalPosition: {x: 624.9095, y: 0, z: -520.67975}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -2164,12 +2164,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TurretAimer
   bulletPrefab: {fileID: 5239241793588733787, guid: 95dd81ff7c55159408360add4ffe48f0, type: 3}
   firePoint: {fileID: 8849441586882205432, guid: 1b5738d115fb2b8499fea6b33616579d, type: 3}
-  fireCooldown: 1
+  fireCooldown: 0.5
   targetTag: Monster
-  rotatingPart: {fileID: 0}
-  animator: {fileID: 0}
+  rotatingPart: {fileID: 2977630820109629784}
+  animator: {fileID: 2409141206851066279}
   activateTrigger: ActiveTurret
-  xAxisCorrection: 0
   yAxisCorrection: 0
 --- !u!95 &2409141206851066279
 Animator:
@@ -2193,27 +2192,23 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-1874841938610736499
-MonoBehaviour:
+--- !u!111 &320851366776486264
+Animation:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3565550701267566952}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f65d8a7e6bde9e4aa39e170359816d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TurretAimer
-  bulletPrefab: {fileID: 5239241793588733787, guid: 95dd81ff7c55159408360add4ffe48f0, type: 3}
-  firePoint: {fileID: 8849441586882205432, guid: 1b5738d115fb2b8499fea6b33616579d, type: 3}
-  fireCooldown: 1
-  targetTag: Monster
-  rotatingPart: {fileID: 0}
-  animator: {fileID: 0}
-  activateTrigger: ActiveTurret
-  xAxisCorrection: 0
-  yAxisCorrection: 0
+  serializedVersion: 4
+  m_Animation: {fileID: -1609281748187839663, guid: 1b5738d115fb2b8499fea6b33616579d, type: 3}
+  m_Animations:
+  - {fileID: -623603649343465320, guid: 1b5738d115fb2b8499fea6b33616579d, type: 3}
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_UpdateMode: 0
+  m_CullingType: 0
 --- !u!1 &3837767008189215416
 GameObject:
   m_ObjectHideFlags: 0
@@ -3175,9 +3170,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3937701313901524421}
-  - component: {fileID: 7684812382614448044}
-  - component: {fileID: 3341261414770538815}
-  - component: {fileID: 8465349856520245976}
   m_Layer: 0
   m_Name: TorretaAnimada 1
   m_TagString: Turret
@@ -3193,7 +3185,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4462599766282350463}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: -0.3799282, y: 0.59636784, z: 0.59636784, w: 0.3799282}
   m_LocalPosition: {x: 0, y: 0.02, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
@@ -3201,67 +3193,7 @@ Transform:
   - {fileID: 2976820157765734259}
   - {fileID: 5467571410427954390}
   m_Father: {fileID: 6420886125694783297}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
---- !u!114 &7684812382614448044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4462599766282350463}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f65d8a7e6bde9e4aa39e170359816d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TurretAimer
-  bulletPrefab: {fileID: 5239241793588733787, guid: 95dd81ff7c55159408360add4ffe48f0, type: 3}
-  firePoint: {fileID: 8849441586882205432, guid: 1b5738d115fb2b8499fea6b33616579d, type: 3}
-  fireCooldown: 1
-  targetTag: Monster
-  rotatingPart: {fileID: 0}
-  animator: {fileID: 3341261414770538815}
-  activateTrigger: ActiveTurret
-  xAxisCorrection: 0
-  yAxisCorrection: 0
---- !u!95 &3341261414770538815
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4462599766282350463}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 9517c65f52a427343b08ff386d744627, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
---- !u!111 &8465349856520245976
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4462599766282350463}
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Animation: {fileID: -1609281748187839663, guid: 1b5738d115fb2b8499fea6b33616579d, type: 3}
-  m_Animations:
-  - {fileID: -623603649343465320, guid: 1b5738d115fb2b8499fea6b33616579d, type: 3}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_UpdateMode: 0
-  m_CullingType: 0
+  m_LocalEulerAnglesHint: {x: -90, y: 115, z: 0}
 --- !u!1 &4549905627667692322
 GameObject:
   m_ObjectHideFlags: 0
